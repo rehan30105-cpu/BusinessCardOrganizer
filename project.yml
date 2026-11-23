@@ -56,10 +56,10 @@ targets:
           - UIInterfaceOrientationPortrait
         NSFaceIDUsageDescription: Business Card Organizer uses Face ID to authenticate your access to your saved contacts.
     scheme:
-      test:
-        testTargets:
-          - BusinessCardOrganizerTests
-          - BusinessCardOrganizerUITests
+      testTargets:
+        - BusinessCardOrganizerTests
+        - BusinessCardOrganizerUITests
+      gatherCoverageData: true
     settings:
       base:
         INFOPLIST_FILE: BusinessCardOrganizer/Resources/Info.plist

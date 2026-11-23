@@ -38,6 +38,78 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
 
+      - name: Verify generated Xcode project and scheme configuration
+        run: |
+          echo "=== 1. Checking BusinessCardOrganizer.xcodeproj ==="
+          if [ ! -d "BusinessCardOrganizer.xcodeproj" ]; then
+            echo "ERROR: BusinessCardOrganizer.xcodeproj was not generated!"
+            exit 1
+          fi
+
+          echo "=== 2. Checking available schemes and targets ==="
+          SCHEMES=$(xcodebuild -list -project BusinessCardOrganizer.xcodeproj)
+          echo "$SCHEMES"
+          if ! echo "$SCHEMES" | grep -q "BusinessCardOrganizer"; then
+            echo "ERROR: Scheme 'BusinessCardOrganizer' not found in project!"
+            exit 1
+          fi
+          if ! echo "$SCHEMES" | grep -q "BusinessCardOrganizerTests"; then
+            echo "ERROR: Target 'BusinessCardOrganizerTests' not found in project!"
+            exit 1
+          fi
+          if ! echo "$SCHEMES" | grep -q "BusinessCardOrganizerUITests"; then
+            echo "ERROR: Target 'BusinessCardOrganizerUITests' not found in project!"
+            exit 1
+          fi
+
+          echo "=== 3. Structurally inspecting scheme TestAction via Python XML ==="
+          python3 - <<'PY'
+          import os, sys
+          import xml.etree.ElementTree as ET
+
+          scheme_path = "BusinessCardOrganizer.xcodeproj/xcshareddata/xcschemes/BusinessCardOrganizer.xcscheme"
+          if not os.path.isfile(scheme_path):
+              print(f"ERROR: Shared scheme file not found at {scheme_path}")
+              sys.exit(1)
+
+          try:
+              tree = ET.parse(scheme_path)
+              root = tree.getroot()
+          except Exception as e:
+              print(f"ERROR: Failed to parse XML at {scheme_path}: {e}")
+              sys.exit(1)
+
+          test_action = root.find("TestAction")
+          if test_action is None:
+              print(f"ERROR: No <TestAction> element found in {scheme_path}")
+              sys.exit(1)
+
+          testables = test_action.find("Testables")
+          if testables is None:
+              print(f"ERROR: No <Testables> container found inside <TestAction> in {scheme_path}")
+              sys.exit(1)
+
+          discovered = []
+          for ref in testables.findall("TestableReference"):
+              name = ref.get("BlueprintName")
+              if not name:
+                  buildable = ref.find("BuildableReference")
+                  if buildable is not None:
+                      name = buildable.get("BlueprintName")
+              if name:
+                  discovered.append(name)
+
+          print(f"Discovered test targets in TestAction: {discovered}")
+
+          expected = {"BusinessCardOrganizerTests", "BusinessCardOrganizerUITests"}
+          missing = expected - set(discovered)
+          if missing:
+              print(f"ERROR: Missing expected test targets in TestAction: {missing}")
+              sys.exit(1)
+
+          print("SUCCESS: Both test targets are properly configured in scheme TestAction.")
+          PY
+
       - name: List available simulators
         run: xcrun simctl list devices available | head -40
 
