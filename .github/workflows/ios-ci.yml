@@ -70,39 +70,55 @@ jobs:
           echo "SIM_RUNTIME=$SIM_RUNTIME" >> $GITHUB_ENV
       - name: Build for iOS Simulator (no code signing)
         run: |
+          set -o pipefail
           xcodebuild -project BusinessCardOrganizer.xcodeproj \
             -scheme BusinessCardOrganizer \
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,id=${SIM_UDID}" \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
-            build
+            build 2>&1 | tee build-output.log
 
       - name: Run unit and UI tests
         run: |
+          set -o pipefail
+          rm -rf TestResults.xcresult test-output.log
           xcodebuild test -project BusinessCardOrganizer.xcodeproj \
             -scheme BusinessCardOrganizer \
             -sdk iphonesimulator \
             -destination "platform=iOS Simulator,id=${SIM_UDID}" \
-            CODE_SIGNING_ALLOWED=NO
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tee test-output.log
 
-      - name: Upload build logs
+      - name: Publish test execution summary
+        if: always()
+        run: |
+          if [ -f test-output.log ]; then
+            echo "### Test Execution Log (Last 100 lines)" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            tail -n 100 test-output.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload build and test logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-logs
+          name: build-and-test-logs
           path: |
+            build-output.log
+            test-output.log
             ~/Library/Developer/Xcode/DerivedData/**/Build/Logs/*.xcactivitylog
             ~/Library/Developer/Xcode/DerivedData/**/Build/Intermediates.noindex/**/*.xcactivitylog
+          if-no-files-found: warn
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: |
-            ~/Library/Developer/Xcode/DerivedData/**/TestAttachments/**
-            ~/Library/Developer/Xcode/DerivedData/**/Logs/Test/*.xcresult
+          path: TestResults.xcresult
+          if-no-files-found: warn
 
       - name: Upload simulator app bundle
         if: success()
