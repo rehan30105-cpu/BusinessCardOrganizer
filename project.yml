@@ -105,6 +105,4 @@ targets:
         CODE_SIGNING_ALLOWED: NO
         CODE_SIGNING_REQUIRED: NO
 
-packages: []
-
 additionalFiles: []
