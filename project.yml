@@ -1,0 +1,129 @@
+name: BusinessCardOrganizer
+options:
+  bundleId: com.example.BusinessCardOrganizer
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.4"
+  createsIntergroups: false
+  createIntergroupsForGroups: false
+  packageManager: none
+  developmentLanguage: en
+  usesSwiftUI: true
+  usesTextEncoding: Unicode
+  lastUpgradeCheck: "1540"
+
+settings:
+  base:
+    INFOPLIST_FILE: BusinessCardOrganizer/Resources/Info.plist
+    SWIFT_VERSION: "5.9"
+    SWIFT_EMIT_LOC_STRINGS: YES
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 1.0
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: ""
+    CODE_SIGNING_ALLOWED: NO
+    CODE_SIGNING_REQUIRED: NO
+    CODE_SIGN_ENTITLEMENTS: ""
+    PROVISIONING_PROFILE: ""
+    PROVISIONING_PROFILE_SPECIFIER: ""
+    ENABLE_PREVIEWS: YES
+    ENABLE_USER_INTERFACE_SCANNING_LINKING: NO
+    ENABLE_HARDENED_RUNTIME: NO
+    ENABLE_TESTABILITY: YES
+    SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+    CLANG_ANALYZER_NONNULL: YES
+    CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION: YES
+    CLANG_WARN_DOCUMENTATION_COMMENTS: YES
+    CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER: YES
+    CLANG_WARN_UNGUARDED_AVAILABILITY: YES_AGGRESSIVE
+    GCC_WARN_INHIBIT_ALL_WARNINGS: NO
+    GCC_WARN_UNUSED_FUNCTION: YES
+    GCC_WARN_UNUSED_VARIABLE: YES
+    SWIFT_STRICT_CONCURRENCY: complete
+    SWIFT_WARN_INCOMPLETE_PATTERN_CHECK: YES
+    SWIFT_WARN_UNUSED_VARIABLE: YES
+
+configs:
+  Debug:
+    configFile: Configs/Debug.xcconfig
+  Release:
+    configFile: Configs/Release.xcconfig
+
+targets:
+  BusinessCardOrganizer:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    source: BusinessCardOrganizer
+    info:
+      path: BusinessCardOrganizer/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: Business Card Organizer
+        LSRequiresIPhoneOS: true
+        UILaunchScreen:
+          Name: LaunchScreen
+        UIRequiresFullScreen: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+        NSFaceIDUsageDescription: Business Card Organizer uses Face ID to authenticate your access to your saved contacts.
+        NSUserUsageDescription: Business Card Organizer uses biometric authentication to protect your contact data.
+    entitlements: ""
+    settings:
+      base:
+        INFOPLIST_FILE: BusinessCardOrganizer/Resources/Info.plist
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: ""
+        CODE_SIGNING_ALLOWED: NO
+        CODE_SIGNING_REQUIRED: NO
+    schemes:
+      test:
+        config: Debug
+        testTargets:
+          BusinessCardOrganizerTests:
+            variables: {}
+
+  BusinessCardOrganizerTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    source: Tests/BusinessCardOrganizerTests
+    info:
+      path: Tests/BusinessCardOrganizerTests/Info.plist
+    dependencies:
+      target: BusinessCardOrganizer
+    settings:
+      base:
+        INFOPLIST_FILE: Tests/BusinessCardOrganizerTests/Info.plist
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: ""
+        CODE_SIGNING_ALLOWED: NO
+        CODE_SIGNING_REQUIRED: NO
+    schemes:
+      test:
+        config: Debug
+
+  BusinessCardOrganizerUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    source: Tests/BusinessCardOrganizerUITests
+    info:
+      path: Tests/BusinessCardOrganizerUITests/Info.plist
+    dependencies:
+      target: BusinessCardOrganizer
+    settings:
+      base:
+        INFOPLIST_FILE: Tests/BusinessCardOrganizerUITests/Info.plist
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: ""
+        CODE_SIGNING_ALLOWED: NO
+        CODE_SIGNING_REQUIRED: NO
+    schemes:
+      test:
+        config: Debug
+
+packages: []
+
+additionalFiles: []
