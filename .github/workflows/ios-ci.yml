@@ -45,16 +45,16 @@ jobs:
         run: |
           xcrun simctl list devices available -j > /tmp/simulators.json
           python3 - <<'PY' > /tmp/simulator_selected.txt || true
-import json, sys
-with open('/tmp/simulators.json') as f:
-    data = json.load(f)
-for runtime, devices in data['devices'].items():
-    for d in devices:
-        if d['name'].startswith('iPhone') and d.get('isAvailable', False):
-            print(f'{d["name"]}|{d["udid"]}|{runtime}')
-            sys.exit(0)
-sys.exit(1)
-PY
+          import json, sys
+          with open('/tmp/simulators.json') as f:
+              data = json.load(f)
+          for runtime, devices in data['devices'].items():
+              for d in devices:
+                  if d['name'].startswith('iPhone') and d.get('isAvailable', False):
+                      print(f'{d["name"]}|{d["udid"]}|{runtime}')
+                      sys.exit(0)
+          sys.exit(1)
+          PY
           if [ ! -s /tmp/simulator_selected.txt ]; then
             echo "ERROR: No iPhone simulator available"
             xcrun simctl list devices available
