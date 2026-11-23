@@ -26,7 +26,5 @@
 	</array>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Business Card Organizer uses Face ID to authenticate your access to your saved contacts.</string>
-	<key>NSUserUsageDescription</key>
-	<string>Business Card Organizer uses biometric authentication to protect your contact data.</string>
 </dict>
 </plist>

@@ -2,9 +2,9 @@ name: iOS CI
 
 on:
   push:
-    branches: [main]
+    branches: [master, main]
   pull_request:
-    branches: [main]
+    branches: [master, main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,7 +15,6 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 60
     env:
-      DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
       XCODEGEN_VERSION: "2.33.0"
     steps:
       - name: Checkout repository
@@ -24,14 +23,16 @@ jobs:
       - name: Verify Xcode availability
         run: |
           echo "Xcode version: $(xcodebuild -version | head -1)"
-          if [ ! -d "/Applications/Xcode_15.4.app" ]; then
-            echo "ERROR: Xcode 15.4 not found at /Applications/Xcode_15.4.app"
+          XCODE_PATH=$(xcode-select -p)
+          echo "Xcode path: $XCODE_PATH"
+          if [ ! -d "$XCODE_PATH" ]; then
+            echo "ERROR: Xcode not found at $XCODE_PATH"
             exit 1
           fi
 
       - name: Install XcodeGen
         run: |
-          brew install xcodegen@${XCODEGEN_VERSION} || brew upgrade xcodegen@${XCODEGEN_VERSION} || true
+          brew install xcodegen || brew upgrade xcodegen || true
           xcodegen --version
 
       - name: Generate Xcode project

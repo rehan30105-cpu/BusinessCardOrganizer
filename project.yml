@@ -43,12 +43,6 @@ settings:
     SWIFT_WARN_INCOMPLETE_PATTERN_CHECK: YES
     SWIFT_WARN_UNUSED_VARIABLE: YES
 
-configs:
-  Debug:
-    configFile: Configs/Debug.xcconfig
-  Release:
-    configFile: Configs/Release.xcconfig
-
 targets:
   BusinessCardOrganizer:
     type: application
@@ -61,15 +55,14 @@ targets:
         CFBundleDisplayName: Business Card Organizer
         LSRequiresIPhoneOS: true
         UILaunchScreen:
-          Name: LaunchScreen
+          Name: ""
         UIRequiresFullScreen: false
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         UISupportedInterfaceOrientations~ipad:
           - UIInterfaceOrientationPortrait
         NSFaceIDUsageDescription: Business Card Organizer uses Face ID to authenticate your access to your saved contacts.
-        NSUserUsageDescription: Business Card Organizer uses biometric authentication to protect your contact data.
-    entitlements: ""
+    entitlements:
     settings:
       base:
         INFOPLIST_FILE: BusinessCardOrganizer/Resources/Info.plist
@@ -82,6 +75,8 @@ targets:
         config: Debug
         testTargets:
           BusinessCardOrganizerTests:
+            variables: {}
+          BusinessCardOrganizerUITests:
             variables: {}
 
   BusinessCardOrganizerTests:
