@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: business-card-organizer-network-policy
+  labels:
+    app: business-card-organizer
+    component: network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: business-card-organizer
+      component: backend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: default
+        - podSelector:
+            matchLabels:
+              app: business-card-organizer
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      policyTypes:
+        - Egress

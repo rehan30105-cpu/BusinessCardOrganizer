@@ -1,0 +1,27 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodScaler
+metadata:
+  name: business-card-organizer-hpa
+  labels:
+    app: business-card-organizer
+    component: hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: business-card-organizer-backend
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: UtilizationAverage
+          averageUtilization: 50
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: UtilizationAverage
+          averageUtilization: 70

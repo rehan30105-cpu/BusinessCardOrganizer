@@ -19,6 +19,7 @@ class DashboardViewModel {
     var showsEmptyState: Bool {
         contacts.isEmpty && !isLoading
     }
+    var tags: Set<ContactTag> = []
 
     // Dependencies (injected)
     var contactService: ContactServiceProtocol?
@@ -47,6 +48,8 @@ class DashboardViewModel {
             contacts = try await contactService?.fetchContacts() ?? []
             totalCount = contacts.count
             favoriteCount = contacts.filter { $0.isFavorite }.count
+            // Extract unique tags from all contacts
+            tags = Set(contacts.flatMap { $0.tags })
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -55,12 +58,12 @@ class DashboardViewModel {
     }
 
     // Authenticate user
-    func authenticate() async {
+    func authenticateLocal() async {
         guard authenticationState != .authenticating else { return }
         authenticationState = .authenticating
 
         do {
-            try await authenticationService?.authenticate()
+            try await authenticationService?.authenticateLocal()
             authenticationState = .authenticated
         } catch {
             authenticationState = .failed
@@ -68,6 +71,20 @@ class DashboardViewModel {
         }
     }
 
+    // Authenticate cloud account (server-side credentials, separate from local unlock)
+    func authenticateCloud() async {
+        guard authenticationState != .authenticating else { return }
+        authenticationState = .authenticating
+        
+        do {
+            try await authenticationService?.authenticateCloud()
+            authenticationState = .authenticated
+        } catch {
+            authenticationState = .failed
+            errorMessage = error.localizedDescription
+        }
+    }
+    
     // Logout user
     func logout() async {
         authenticationState = .unauthenticated

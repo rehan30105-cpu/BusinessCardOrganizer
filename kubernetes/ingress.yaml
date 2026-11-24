@@ -1,0 +1,65 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: business-card-organizer-ingress
+  labels:
+    app: business-card-organizer
+    component: ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # Rate limiting annotation
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    # CORS headers
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    # Security headers
+    nginx.ingress.kubernetes.io/add-forwarded-for: "true"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-Frame-Options "SAMEORIGIN" always;
+      add_header X-XSS-Protection "1; mode=block" always;
+      add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+spec:
+  rules:
+    - host: api.business-card-organizer.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: business-card-organizer-backend
+                port:
+                  number: 80
+    - host: localhost
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: business-card-organizer-backend
+                port:
+                  number: 80
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: business-card-organizer-backend
+                port:
+                  number: 80
+          - path: /api/docs
+            pathType: Prefix
+            backend:
+              service:
+                name: business-card-organizer-backend
+                port:
+                  number: 80
+          - path: /api/redoc
+            pathType: Prefix
+            backend:
+              service:
+                name: business-card-organizer-backend
+                port:
+                  number: 80

@@ -1,0 +1,84 @@
+"""Docker Compose for Business Card Organizer Backend Infrastructure.
+
+Services:
+- backend: FastAPI application
+- postgres: PostgreSQL database
+- redis: Redis caching
+- nginx: API gateway and reverse proxy
+"""
+
+version: "3.8"
+
+services:
+  # Backend application
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: business-card-organizer-backend
+    restart: unless-stopped
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - ENVIRONMENT=${ENVIRONMENT}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - backend_data:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+
+  # PostgreSQL database
+  postgres:
+    image: postgres:15-alpine
+    container_name: business-card-organizer-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+
+  # Redis caching
+  redis:
+    image: redis:7-alpine
+    container_name: business-card-organizer-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    env_file:
+      - .env
+
+  # Nginx reverse proxy and API gateway
+  nginx:
+    image: nginx:alpine
+    container_name: business-card-organizer-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - nginx_log:/var/log/nginx
+    depends_on:
+      - backend
+  
+volumes:
+  backend_data:
+  postgres_data:
+  redis_data:
+  nginx_log:

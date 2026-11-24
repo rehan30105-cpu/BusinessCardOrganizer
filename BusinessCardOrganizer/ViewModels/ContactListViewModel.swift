@@ -24,6 +24,9 @@ class ContactListViewModel {
     // Dependencies
     var contactService: ContactServiceProtocol?
     var authenticationService: AuthenticationServiceProtocol?
+    
+    // Local persistence state
+    @Published var isLocalData: Bool = false
 
     // Private cancellables
     private var cancellables = Set<AnyCancellable>()
